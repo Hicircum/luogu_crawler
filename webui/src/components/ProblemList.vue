@@ -2,14 +2,14 @@
     <div class="table-container">
         <div class="btn">
             <span>
-                <el-button type="success" @click="getLocalData">刷新列表</el-button>
+                <el-button type="success" @click="startTable">刷新列表</el-button>
             </span>
         </div>
         <div class="form">
             <el-table :data="data">
                 <el-table-column prop="pid" label="操作" width="80">
                     <template #default="scope">
-                        <el-button size="small" type="primary" @click="test()">打开</el-button>
+                        <el-button size="small" type="primary">打开</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column prop="pid" label="题号" sortable width="120" />
@@ -57,27 +57,44 @@
             </el-table>
         </div>
     </div>
-
-    <div class="test" v-for="i in datab">{{ i.pid }}</div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import request from '../utils/request';
 
-const data = ref();
-const datab = ref();
+const data = ref([]);
+let tagArr = [];
+const fliterList = ref([]);
+
+
+const startTable = () => {
+    request({
+        url: '/api/tags',
+        method: 'get',
+    }).then(res => {
+        tagArr = res.data;
+        getLocalData()
+    })
+}
 
 function getLocalData(){
-    request.get("/api/local").then((res) => {
-        data.value = res.data;
-        console.log(abc)
-    });
+    console.log(tagArr)
+    request({
+        url: '/api/local',
+        method: 'get',
+    }).then(res => {
+        data.value = res.data
+    })
 }
 
 
-let y = [];
-// getLocalData();
+function addFliter(name, id){
+    fliterList.value.push({
+        text: name,
+        value: id,
+    })
+}
 
 let difficulty = {
     "0": "暂无评定",
@@ -95,11 +112,12 @@ const filterDifficulty = (value, row) => {
 }
 
 function getTagName(tagNum){
-    let arrlen = y.tags.length;
+    let arrlen = tagArr.tags.length;
     var i;
     for(i=0; i<arrlen; i++){
-        if(y.tags[i].id == tagNum){
-            return y.tags[i].name
+        if(tagArr.tags[i].id == tagNum){
+            addFliter(tagArr.tags[i].name, tagNum)
+            return tagArr.tags[i].name
         }
     }
     return "NoTag"
@@ -107,12 +125,12 @@ function getTagName(tagNum){
 
 const isDisplayStatus = ref(true);
 function isDisplay(Num){
-    let arrlen = y.tags.length;
+    let arrlen = tagArr.tags.length;
     var i;
     var typeNum=-1;
     for(i=0; i<arrlen; i++){
-        if(y.tags[i].id == Num){
-            typeNum = y.tags[i].type
+        if(tagArr.tags[i].id == Num){
+            typeNum = tagArr.tags[i].type
             break
         }
     }
@@ -130,6 +148,10 @@ function isDisplay(Num){
         }
     }
 }
+
+onMounted(() => {
+    startTable.apply()
+})
 </script>
 
 <style lang="less" scoped>

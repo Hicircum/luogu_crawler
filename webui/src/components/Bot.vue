@@ -6,8 +6,7 @@
                 当前任务数：{{ task_num }}
             </span>
             <span>
-                <el-button type="primary">新建任务</el-button>
-                <el-button type="success">开始爬取</el-button>
+                <el-button type="success" @click="startTask">开始爬取</el-button>
             </span>
         </div>
         <div class="list" v-show="task_list_show">
@@ -20,8 +19,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import request from '../utils/request';
 
-const task_num = ref(50);
+const task_num = ref(0);
 const task_list = ref([]);
 const task_list_text = ref("展开");
 const task_list_show = ref(false);
@@ -37,42 +37,28 @@ function showList(){
 }
 
 
-let x = [
-    {
-        "tags": [
-            1
-        ],
-        "wantsTranslation": false,
-        "totalSubmit": 1153624,
-        "totalAccepted": 651586,
-        "flag": 5,
-        "pid": "P1001",
-        "title": "A+B Problem",
-        "difficulty": 1,
-        "fullScore": 100,
-        "type": "P"
-    },
-    {
-        "tags": [
-            3,
-            19,
-            82
-        ],
-        "wantsTranslation": false,
-        "totalSubmit": 511263,
-        "totalAccepted": 150962,
-        "flag": 5,
-        "pid": "P1002",
-        "title": "[NOIP2002 普及组] 过河卒",
-        "difficulty": 2,
-        "fullScore": 100,
-        "type": "P"
-    }
-]
-console.log(x.length)
-task_list.value = x;
-task_num.value = x.length;
+const getTask = () => {
+    request({
+        url: '/api/task',
+        method: 'get',
+    }).then(res => {
+        task_list.value = res.data;
+        task_num.value = task_list.value.length;
+    })
+}
 
+
+const startTask = () => {
+    request({
+        url: '/api/start',
+        method: 'get',
+    }).then(res => {
+        console.log(res.data)
+    })
+}
+
+// 每隔1s执行一次gettask
+// setInterval(getTask, 1000);
 </script>
 
 <style lang="less" scoped>
