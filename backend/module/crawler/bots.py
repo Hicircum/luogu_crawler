@@ -108,6 +108,7 @@ def start_task():
             failed_list.append(task)
             print("failed" + task["pid"] + str(e))
             continue
+    os.chdir("..")
 
 
 def start_bot(task_num: int = 10, random_sleep: bool = True):
