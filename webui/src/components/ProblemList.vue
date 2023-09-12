@@ -2,14 +2,14 @@
     <div class="table-container">
         <div class="btn">
             <span>
-                <el-button type="success">刷新列表</el-button>
+                <el-button type="success" @click="getLocalData">刷新列表</el-button>
             </span>
         </div>
         <div class="form">
             <el-table :data="data">
                 <el-table-column prop="pid" label="操作" width="80">
                     <template #default="scope">
-                        <el-button size="small" type="primary" @click="test(scope.row.pid)">打开</el-button>
+                        <el-button size="small" type="primary" @click="test()">打开</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column prop="pid" label="题号" sortable width="120" />
@@ -57,19 +57,27 @@
             </el-table>
         </div>
     </div>
+
+    <div class="test" v-for="i in datab">{{ i.pid }}</div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import request from '../utils/request';
 
 const data = ref();
+const datab = ref();
 
-let x = [{"tags": [2, 108], "wantsTranslation": false, "totalSubmit": 998129, "totalAccepted": 378702, "flag": 5, "pid": "P1000", "title": "\u8d85\u7ea7\u739b\u4e3d\u6e38\u620f", "difficulty": 1, "fullScore": 100, "type": "P"}, {"tags": [1], "wantsTranslation": false, "totalSubmit": 1153623, "totalAccepted": 651584, "flag": 5, "pid": "P1001", "title": "A+B Problem", "difficulty": 1, "fullScore": 100, "type": "P"}, {"tags": [3, 19, 82], "wantsTranslation": false, "totalSubmit": 511263, "totalAccepted": 150962, "flag": 5, "pid": "P1002", "title": "[NOIP2002 \u666e\u53ca\u7ec4] \u8fc7\u6cb3\u5352", "difficulty": 2, "fullScore": 100, "type": "P"}];
-let y = [];
-data.value = x;
-function test(x){
-    console.log(x);
+function getLocalData(){
+    request.get("/api/local").then((res) => {
+        data.value = res.data;
+        console.log(abc)
+    });
 }
+
+
+let y = [];
+// getLocalData();
 
 let difficulty = {
     "0": "暂无评定",
