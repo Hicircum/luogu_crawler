@@ -1,10 +1,14 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, Request
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from time import sleep
 from module.crawler.bots import start_bot, task_list, init_bot
 
 
 router = FastAPI()
 init_path = ""
+enable_webui = False
 
 
 @router.on_event("startup")
@@ -46,3 +50,20 @@ async def test():
             return json.load(f)
     else:
         return []
+    
+
+if enable_webui:
+    router.mount("/assets", StaticFiles(directory="templates/assets"), name="assets")
+    templates = Jinja2Templates(directory="templates")
+
+
+    @router.get("/favicon.ico", tags=["html"])
+    def favicon():
+        return FileResponse("templates/favicon.ico")
+
+
+    # HTML Response
+    @router.get("/{full_path:path}", response_class=HTMLResponse, tags=["html"])
+    def index(request: Request):
+        context = {"request": request}
+        return templates.TemplateResponse("index.html", context)
