@@ -15,6 +15,9 @@ download
 ```
 其中`index.json`为自动生成的索引文件，请勿直接修改。
 
+## 注意事项
+请将 `backend\module\crawler\luogu_parser.py` 内 `def pid_parser(pid: str):` 函数内的cookie更换为有效cookie
+
 ## 源码运行
 请确保你已经安装python、nodejs与git
 ```
@@ -32,3 +35,6 @@ cd ..
 ```
 将 `dist` 文件夹内的所有文件拷贝到`backend`的`templates`文件夹内，运行`main.py`即可。  
 **注意：如果有报错找不到路径，请确保当前目录为 `backend` 文件夹**
+
+## 运行打包文件
+下载release中的 `luogu.zip` 安装相应的python包即可运行，如果你使用pycharm，可直接导入，pycharm会为你自动安装。
