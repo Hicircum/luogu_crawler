@@ -9,7 +9,7 @@
             <el-table :data="data">
                 <el-table-column prop="pid" label="操作" width="80">
                     <template #default="scope">
-                        <el-button size="small" type="primary">打开</el-button>
+                        <el-button size="small" type="primary" @click="openFolder(scope.row.pid)">打开</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column prop="pid" label="题号" sortable width="120" />
@@ -88,6 +88,14 @@ function getLocalData(){
     })
 }
 
+function openFolder(pid){
+    request({
+        url: '/api/open/'+pid,
+        method: 'get'
+    }).then(res => {
+        console.log(res)
+    })
+}
 
 function addFliter(name, id){
     fliterList.value.push({
