@@ -2,11 +2,30 @@
     <div class="table-container">
         <div class="btn">
             <span>
+                <el-select
+                v-model="filterSelected"
+                multiple
+                collapse-tags
+                clearable
+                collapse-tags-tooltip
+                :max-collapse-tags="3"
+                placeholder="标签筛选"
+                style="width: 350px"
+                >
+                    <el-option
+                        v-for="item in filterList"
+                        :key="item.value"
+                        :label="item.text"
+                        :value="item.value"
+                    />
+                </el-select>
+            </span>
+            <span>
                 <el-button type="success" @click="startTable">刷新列表</el-button>
             </span>
         </div>
         <div class="form">
-            <el-table :data="data">
+            <el-table :data="filterTags">
                 <el-table-column prop="pid" label="操作" width="80">
                     <template #default="scope">
                         <el-button size="small" type="primary" @click="openFolder(scope.row.pid)">打开</el-button>
@@ -60,12 +79,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import request from '../utils/request';
 
 const data = ref([]);
 let tagArr = [];
-const fliterList = ref([]);
+const filterList = ref([]);
+const filterSelected = ref([]);
 
 
 const startTable = () => {
@@ -98,10 +118,15 @@ function openFolder(pid){
 }
 
 function addFliter(name, id){
-    fliterList.value.push({
+    let temp = {
         text: name,
         value: id,
-    })
+    }
+    // 判断temp有没有在filterList里，没有则添加
+    const index = filterList.value.findIndex(item => item.value === temp.value);
+    if (index === -1) {
+        filterList.value.push(temp);
+    }
 }
 
 let difficulty = {
@@ -116,8 +141,28 @@ let difficulty = {
 }
 
 const filterDifficulty = (value, row) => {
-    return row.difficulty === value
+    // var i;
+    // for(i=0;i<row.tags.length;i++){
+    //     return i === value
+    // }
+    return value === row.difficulty
 }
+
+const filterTags = computed(() =>
+  data.value.filter(
+    (dt) => {
+        if(filterSelected.value.length == 0){
+            return true
+        }
+        for(var i=0;i<dt.tags.length;i++){
+            if(filterSelected.value.includes(dt.tags[i])){
+                return true
+            }
+        }
+        return false
+    }
+  )
+)
 
 function getTagName(tagNum){
     let arrlen = tagArr.tags.length;
@@ -169,7 +214,7 @@ onMounted(() => {
     .btn{
         padding: 15px;
         display: flex;
-        justify-content: end;
+        justify-content: space-between;
         align-items: center;
     }
     .fliter-btn{
