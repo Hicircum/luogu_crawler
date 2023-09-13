@@ -6,7 +6,7 @@
                 当前任务数：{{ task_num }}
             </span>
             <span>
-                <el-button type="success" @click="startTask">开始爬取</el-button>
+                <el-button type="success" @click="startTask" :loading="buttonStatus">开始爬取</el-button>
             </span>
         </div>
         <div class="list" v-show="task_list_show">
@@ -55,10 +55,18 @@ const startTask = () => {
     }).then(res => {
         console.log(res.data)
     })
+    buttonWait.apply()
 }
 
+const buttonStatus = ref(false);
+const buttonWait = () => {
+  buttonStatus.value = true
+  setTimeout(() => {
+    buttonStatus.value = false
+  }, 6000)
+}
 // 每隔1s执行一次gettask
-// setInterval(getTask, 1000);
+setInterval(getTask, 1000);
 </script>
 
 <style lang="less" scoped>
