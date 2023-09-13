@@ -101,6 +101,7 @@ def start_task():
             os.chdir(home_path)
             print("saving " + task["pid"])
             save_to_folder(task)
+            task.update({"loacl_path": os.getcwd()})
             os.chdir(home_path)
             update_index(task)
             sleep(random.randint(2, 4))

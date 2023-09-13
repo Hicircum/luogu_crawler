@@ -2,8 +2,7 @@ from fastapi import FastAPI, BackgroundTasks, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from time import sleep
-from module.crawler.bots import start_bot, task_list, init_bot
+from module.crawler.bots import start_bot, task_list
 
 
 router = FastAPI()
@@ -40,6 +39,20 @@ async def t(background_tasks: BackgroundTasks):
 @router.get("/api/task", tags=["Bot"])
 async def status():
     return task_list
+    
+
+@router.get("/api/open/{pid}", tags=["Bot"])
+async def myopen(pid: str):
+    import os, json
+    if os.path.exists(init_path+"/download/index.json"):
+        with open(init_path+"/download/index.json", "r") as f:
+            mylocal = json.load(f)
+        for i in mylocal:
+            if i["pid"] == pid:
+                if os.path.exists(i["loacl_path"]):
+                    os.startfile(i["loacl_path"])
+                    return "ok"
+    return pid
 
 
 @router.get("/api/local", tags=["file"])
